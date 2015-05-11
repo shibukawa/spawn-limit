@@ -1,0 +1,58 @@
+spawn-limit
+===============
+
+It is almost as same as original `child_process.spawn`, but it has maximum process number limit.
+
+`spawn` function receives compatible arguments of `child_process.spawn`, but it returns a Promise object instead of process instance.
+
+This promise is triggered when the process is actually spawned. It passes process instance to the promise callback function.
+
+```js
+var spawn = require("spawn-limit").spawn;
+
+var promise = spawn("ls", ["-la"], {cwd: "~"});
+promise.then(function (ls) {
+    ls.stdout.on("data", function (data) {
+        console.log(data.toString());
+    });
+    ls.on("close", function (code) {
+        console.log("code:", code);
+    });
+});
+```
+
+This module provides `setLimit()` function to set limit count of process, and `waitAll()`` for waiting all external processes's terminations. 
+
+```js
+var spawn = require("spawn-limit").spawn;
+var setLimit = require("spawn-limit").setLimit;
+var waitAll = require("spawn-limit").waitAll;
+
+setLimit(10);
+
+logFiles.map(function (logFile) {
+    spawn("cp", [logFile, "/var/log/archive"]);
+});
+
+waitAll();
+```
+
+API
+----------
+
+* spawn(cmd, [args], [options) => promise
+
+Spawn esternal process.
+
+* setLimit(num)
+
+Set limit count of process. Default number is 10.
+
+* waitAll()
+
+Wait all external process's termination.
+
+License
+-----------
+
+MIT License
