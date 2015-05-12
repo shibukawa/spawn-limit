@@ -2,6 +2,14 @@
 
 var originalSpawn = require("child_process").spawn;
 
+if (typeof Promise === "undefined") {
+    try {
+        var Promise = require("nodegit-promise");
+    } catch (e) {
+        var Promise = require("bluebird");
+    }
+}
+
 var limitCount = 10;
 var currentCount = 0;
 var monitorCallback = null;

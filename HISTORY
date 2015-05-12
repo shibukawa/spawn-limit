@@ -1,9 +1,14 @@
-1.1.0
-=====
+1.2.0 (5/12/2015)
+==================
+
+* It tries to read "nodegit-promise" or "bluebird" if Promise is not available. It can run with node.js 0.10.x.
+
+1.1.0 (5/12/2015)
+==================
 
 * Automatically start/stop setInterval inside module.
 
-1.0.0
-=====
+1.0.0 (5/11/2015)
+==================
 
 * First version
