@@ -24,17 +24,13 @@ promise.then(function (ls) {
 This module provides `setLimit()` function to set limit count of process, and `waitAll()`` for waiting all external processes's terminations. 
 
 ```js
-var spawn = require("spawn-limit").spawn;
-var setLimit = require("spawn-limit").setLimit;
-var waitAll = require("spawn-limit").waitAll;
+var sl = require("spawn-limit");
 
-setLimit(10);
+sl.setLimit(10);
 
 logFiles.map(function (logFile) {
-    spawn("cp", [logFile, "/var/log/archive"]);
+    sl.spawn("cp", [logFile, "/var/log/archive"]);
 });
-
-waitAll();
 ```
 
 API
@@ -48,7 +44,7 @@ Spawn esternal process.
 
 Set limit count of process. Default number is 10.
 
-* waitAll()
+* waitAll() => promise
 
 Wait all external process's termination.
 

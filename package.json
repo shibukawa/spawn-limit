@@ -1,6 +1,6 @@
 {
   "name": "spawn-limit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "child_process.spawn with process count limit",
   "main": "index.js",
   "scripts": {

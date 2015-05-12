@@ -9,6 +9,7 @@ var taskId = 0;
 var remainedTasks = [];
 var remainedTaskCallbacks = {};
 var waitAllCallbacks = [];
+var intervalId = null;
 
 /*
  * Set process limit
@@ -32,6 +33,8 @@ function callWaitAllCallbacks() {
         waitAllCallbacks[0]();
     }
     waitAllCallbacks.splice(0, waitAllCallbacks.splice.length);
+    clearInterval(intervalId);
+    intervalId = null;
 }
 
 /*
@@ -39,6 +42,7 @@ function callWaitAllCallbacks() {
  * Promise result is process object.
  */
 function spawn() {
+    startInterval();
     var args = Array.prototype.slice.call(arguments);
     if (currentCount < limitCount) {
         currentCount++;
@@ -83,30 +87,38 @@ function waitAll() {
     });
 }
 
-setInterval(function () {
-    if (remainedTasks.length && currentCount < limitCount) {
-        var task = remainedTasks.shift();
-        currentCount++;
-        if (monitorCallback) {
-            monitorCallback("start", remainedTasks);
-        }
-        var process = originalSpawn.apply(null, task[0]);
-        process.on("close", function (code) {
-            if (monitorCallback) {
-                monitorCallback("close", remainedTasks, code);
-            }
-            currentCount--;
-            if (currentCount === 0 && remainedTasks.length === 0) {
-                callWaitAllCallbacks();
-            }
-        });
-        var callback = remainedTaskCallbacks[task[1]];
-        delete remainedTaskCallbacks[task[1]];
-        if (callback) {
-            callback(process);
-        }
+/*
+ * Internal method.
+ */
+function startInterval() {
+    if (intervalId !== null) {
+        return;
     }
-}, 20);
+    intervalId = setInterval(function () {
+        if (remainedTasks.length && currentCount < limitCount) {
+            var task = remainedTasks.shift();
+            currentCount++;
+            if (monitorCallback) {
+                monitorCallback("start", remainedTasks);
+            }
+            var process = originalSpawn.apply(null, task[0]);
+            process.on("close", function (code) {
+                if (monitorCallback) {
+                    monitorCallback("close", remainedTasks, code);
+                }
+                currentCount--;
+                if (currentCount === 0 && remainedTasks.length === 0) {
+                    callWaitAllCallbacks();
+                }
+            });
+            var callback = remainedTaskCallbacks[task[1]];
+            delete remainedTaskCallbacks[task[1]];
+            if (callback) {
+                callback(process);
+            }
+        }
+    }, 20);
+}
 
 module.exports = {
     spawn: spawn,

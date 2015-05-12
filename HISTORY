@@ -1,0 +1,9 @@
+1.1.0
+=====
+
+* Automatically start/stop setInterval inside module.
+
+1.0.0
+=====
+
+* First version
